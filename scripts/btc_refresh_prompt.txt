@@ -1,0 +1,38 @@
+Refresh the BTCUSD SMC backtest data and run the backtest. Do these steps in order:
+
+1. Call data_get_ohlcv via the tradingview MCP with symbol="BINANCE:BTCUSDT", timeframe="240", count=300. Write a new smc_backtest/data/save_btc_daily.py that hardcodes those bars and saves to smc_backtest/data/BTCUSD_D.csv. Run it with: python3 smc_backtest/data/save_btc_daily.py
+   NOTE: timeframe "240" = 4H in TradingView. This is the top-level structure timeframe (replaces Daily).
+
+2. Call data_get_ohlcv with symbol="BINANCE:BTCUSDT", timeframe="60", count=300. Write a new smc_backtest/data/save_btc_1h.py that hardcodes those bars and saves to smc_backtest/data/BTCUSD_1H.csv. Run it.
+   NOTE: timeframe "60" = 1H in TradingView.
+
+3. Fetch ~3 months of 5M BTCUSD data in multiple 300-bar chunks:
+   a. First set the chart: chart_set_symbol(symbol="BINANCE:BTCUSDT"), chart_set_timeframe(timeframe="5")
+   b. Collect ALL bars in a single dict keyed by unix timestamp (to deduplicate across chunks).
+   c. Work backwards from today in ~1-day steps (each step = 280 bars × 5 min ≈ 23 hrs).
+      BTC trades 24/7 so ~90 chunks are needed:
+      - For each target date (today, today-1d, today-2d, … today-90d):
+          i.  chart_scroll_to_date(date=<ISO date string>)
+          ii. data_get_ohlcv(symbol="BINANCE:BTCUSDT", timeframe="5", count=300)
+          iii. Merge returned bars into the dict (skip any timestamp already present).
+      - Continue until the earliest bar timestamp is at least 90 days before today.
+   d. Sort all collected bars ascending by timestamp, then write smc_backtest/data/save_btc_5m.py
+      that hardcodes EVERY bar and saves to smc_backtest/data/BTCUSD_5M.csv. Run it.
+   NOTE: ~90 chunks needed. Keep a running count and log progress every 10 chunks.
+
+4. Run the backtest:
+   python3 -m smc_backtest.main --symbol BTCUSD --start 2025-01-01
+
+5. Print a summary: daily trend, 4H trend, signals passed/rejected, and the top rejection filter.
+
+Each save_*.py must follow this template exactly:
+  import csv, pathlib, datetime
+  BARS = [ {"time": <unix int>, "open": ..., "high": ..., "low": ..., "close": ..., "volume": ...}, ... ]
+  OUT = pathlib.Path(__file__).parent / "FILENAME.csv"
+  with open(OUT, "w", newline="") as f:
+      w = csv.DictWriter(f, ["datetime","open","high","low","close","volume"])
+      w.writeheader()
+      for b in BARS:
+          dt = datetime.datetime.utcfromtimestamp(b["time"]).strftime("%Y-%m-%d %H:%M:%S")
+          w.writerow({"datetime":dt,"open":b["open"],"high":b["high"],"low":b["low"],"close":b["close"],"volume":b.get("volume",0)})
+  print(f"Saved {len(BARS)} bars to {OUT}")

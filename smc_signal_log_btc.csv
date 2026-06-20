@@ -1,0 +1,13 @@
+datetime,setup,direction,entry_price,sl_price,sl_distance,tp1_price,tp1_source,tp2_price,tp2_source,rr,choch_type,liquidity_sweep,passed,filter_failed
+2026-06-18 19:35:00+00:00,continuation,bullish,62888.38,62265.78,622.6,66445.93,swing_high,66992.0,swing_high,5.71,CHoCH_internal_bull,False,False,C1_daily_trend
+2026-06-19 01:30:00+00:00,continuation,bearish,62860.84,67298.44,4437.6,62272.07,EQL,62272.07,swing_low,0.13,CHoCH_internal_bear,False,False,C3_not_in_discount_premium
+2026-06-19 05:45:00+00:00,continuation,bullish,62713.76,62265.8,447.96,66445.93,swing_high,66992.0,swing_high,8.33,CHoCH_internal_bull,False,False,C1_daily_trend
+2026-06-19 06:55:00+00:00,continuation,bullish,62894.08,62265.78,628.3,66445.93,swing_high,66992.0,swing_high,5.65,CHoCH_internal_bull,False,False,C1_daily_trend
+2026-06-19 07:15:00+00:00,continuation,bearish,62729.75,67298.42,4568.67,62272.07,EQL,62272.07,swing_low,0.1,CHoCH_internal_bear,False,False,C3_not_in_discount_premium
+2026-06-19 10:05:00+00:00,continuation,bullish,62546.0,62265.82,280.18,66445.93,swing_high,66992.0,swing_high,13.92,CHoCH_internal_bull,False,False,C1_daily_trend
+2026-06-19 11:20:00+00:00,continuation,bullish,62648.0,62265.81,382.19,66445.93,swing_high,66992.0,swing_high,9.94,CHoCH_internal_bull,False,False,C1_daily_trend
+2026-06-19 12:05:00+00:00,continuation,bullish,62687.97,62265.8,422.17,66445.93,swing_high,66992.0,swing_high,8.9,CHoCH_internal_bull,False,False,C1_daily_trend
+2026-06-19 12:50:00+00:00,continuation,bullish,62747.99,62265.8,482.19,66445.93,swing_high,66992.0,swing_high,7.67,CHoCH_internal_bull,False,False,C1_daily_trend
+2026-06-19 16:50:00+00:00,continuation,bearish,63052.08,67298.46,4246.38,62272.07,EQL,62272.07,swing_low,0.18,CHoCH_internal_bear,False,False,C3_not_in_discount_premium
+2026-06-19 18:35:00+00:00,continuation,bearish,62991.38,67298.45,4307.07,62272.07,EQL,62272.07,swing_low,0.17,CHoCH_internal_bear,False,False,C3_not_in_discount_premium
+2026-06-19 21:30:00+00:00,continuation,bearish,63130.42,67298.46,4168.04,62272.07,EQL,62272.07,swing_low,0.21,CHoCH_internal_bear,False,False,C3_not_in_discount_premium
