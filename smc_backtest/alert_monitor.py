@@ -43,7 +43,7 @@ import urllib.error
 
 import pandas as pd
 
-from .live_kraken import refresh_symbol_data, KRAKEN_PAIR
+from .live_kraken import refresh_symbol_data, KRAKEN_PAIR, BINANCE_PAIR
 from .main import _build_pipeline
 from .signals import generate_signals
 
@@ -54,8 +54,9 @@ from .signals import generate_signals
 NTFY_TOPIC = "smc-alerts-c41e75e77c96"   # private topic — subscribed via ntfy app
 NTFY_URL = f"https://ntfy.sh/{NTFY_TOPIC}"
 
-SYMBOLS = list(KRAKEN_PAIR.keys())   # BTCUSD, ETHUSD, SOLUSD, XRPUSD, DOGEUSD
-# BNBUSD intentionally excluded — not tradeable on Kraken.
+SYMBOLS = list(KRAKEN_PAIR.keys()) + list(BINANCE_PAIR.keys())
+# Kraken: BTCUSD, ETHUSD, SOLUSD, XRPUSD, DOGEUSD
+# Binance: AVAX, ADA
 
 STATE_PATH = pathlib.Path(__file__).parent / 'data' / 'live_alert_state.json'
 

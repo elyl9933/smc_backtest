@@ -26,21 +26,42 @@ python3 -m smc_backtest.main --symbol EURUSD --start 2025-01-01 --end 2026-12-31
 
 Outputs: equity curve PNG, structure diagnostic PNG (`*_structure.png`), and a trade log CSV.
 
-## Data — TradingView MCP Only
+## Data Sources
 
-**Data does not come from yfinance.** All OHLCV data is fetched via the TradingView MCP server and saved as CSV files in `smc_backtest/data/`. Python reads those CSVs — it cannot call MCP tools.
+**IMPORTANT: Do NOT use yfinance.** Data must come from authoritative sources only:
 
-| File | How it was created |
-|------|-------------------|
-| `data/EURUSD_D.csv` | `save_daily.py` (hardcoded 300 daily bars from TV MCP) |
-| `data/EURUSD_1H.csv` | `save_1h.py` (hardcoded 300 1H bars from TV MCP) |
-| `data/EURUSD_5M.csv` | `save_5m.py` (hardcoded 300 5M bars from TV MCP) |
+| Instrument | Data source | Method |
+|---|---|---|
+| **Crypto** (BTC, ETH, SOL, XRP, DOGE, AVAX, ADA, etc.) | Binance public API | `fetch_binance_klines.py` |
+| **Forex** (EURUSD, GBPUSD, etc.) | TradingView MCP | Claude Code's `data_get_ohlcv` tool |
+| **Commodities** (XAUUSD, etc.) | TradingView MCP | Claude Code's `data_get_ohlcv` tool |
 
-To add data for a new symbol or date range: fetch via `data_get_ohlcv` MCP tool, write a `save_*.py` script with the bar dicts hardcoded, run it to produce the CSV, then run the backtest.
+All OHLCV data is saved as CSV files in `smc_backtest/data/`. The backtest engine reads these CSVs — it does not fetch data at runtime.
 
-**TV MCP hard cap**: `data_get_ohlcv` returns at most 300 bars regardless of the `count` parameter or scroll position. 300 daily bars ≈ 14 months; 300 1H bars ≈ 12 days; 300 5M bars ≈ 1.5 days.
+### Crypto: Binance API
 
-**Expected signal frequency**: 2–8 trades/month. Zero signals is normal and correct when the daily trend is ranging or when the 5M window is only a day or two.
+Use `fetch_binance_klines.py` to fetch crypto pairs from Binance:
+
+```bash
+python3 fetch_binance_klines.py
+```
+
+Modify the script to add symbols. Binance symbol format: `AVAXUSDT`, `ADAUSDT`, etc.
+
+- **Daily data:** fetches 365 days back
+- **1H/5M data:** fetches 60 days back (5M limit on Binance)
+
+### Forex/Commodities: TradingView MCP
+
+For forex and commodities, use Claude Code's TradingView MCP server:
+1. Open Claude Code and run `tv_health_check` to verify connection
+2. Call `data_get_ohlcv` to fetch bars (max 300 per call)
+3. Hardcode the bar dicts into a `save_*.py` script
+4. Run the script to produce a CSV
+
+**TV MCP hard cap**: `data_get_ohlcv` returns at most 300 bars. This limits multi-timeframe analysis. For extended backtests, use Binance (crypto) or another source (forex/commodities).
+
+**Expected signal frequency**: 2–8 trades/month on a 60-90 day window. Zero signals is normal when the daily trend is ranging or the data window is too small.
 
 ## Module Architecture
 

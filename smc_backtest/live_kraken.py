@@ -25,15 +25,21 @@ import urllib.error
 OUT_DIR = pathlib.Path(__file__).parent / 'data'
 
 KRAKEN_BASE = "https://api.kraken.com/0/public/OHLC"
+BINANCE_BASE = "https://api.binance.com/api/v3/klines"
 
-# local symbol -> Kraken pair name
+# local symbol -> Kraken pair name (for high-liquidity forex/crypto with good history)
 KRAKEN_PAIR = {
     'BTCUSD': 'XBTUSD',
     'ETHUSD': 'ETHUSD',
     'SOLUSD': 'SOLUSD',
     'XRPUSD': 'XRPUSD',
     'DOGEUSD': 'XDGUSD',
-    # BNB is not listed on Kraken spot at all — omitted on purpose.
+}
+
+# local symbol -> Binance pair name (for newer alts or extended history)
+BINANCE_PAIR = {
+    'AVAX': 'AVAXUSDT',
+    'ADA': 'ADAUSDT',
 }
 
 # label -> kraken interval (minutes)
@@ -66,6 +72,26 @@ def fetch_kraken_ohlc(pair: str, interval: int) -> list[dict]:
     return bars
 
 
+def fetch_binance_ohlc(symbol: str, interval: str, limit: int = 500) -> list[dict]:
+    """Fetch OHLC bars from Binance. interval: '1d', '1h', '5m'. Returns up to `limit` bars."""
+    url = f"{BINANCE_BASE}?symbol={symbol}&interval={interval}&limit={limit}"
+    with urllib.request.urlopen(url, timeout=20) as resp:
+        data = json.loads(resp.read())
+    if not isinstance(data, list):
+        raise RuntimeError(f"Binance API error for {symbol}: unexpected response format")
+    bars = []
+    for row in data:
+        bars.append({
+            'time': int(row[0]) // 1000,  # Binance returns ms; convert to seconds
+            'open': float(row[1]),
+            'high': float(row[2]),
+            'low': float(row[3]),
+            'close': float(row[4]),
+            'volume': float(row[5]),  # Base asset volume (not quote)
+        })
+    return bars
+
+
 def write_csv(bars: list[dict], filename: str) -> None:
     out = OUT_DIR / filename
     with open(out, 'w', newline='') as f:
@@ -78,17 +104,29 @@ def write_csv(bars: list[dict], filename: str) -> None:
 
 
 def refresh_symbol_data(symbol: str) -> None:
-    """Pull fresh D/4H/5M bars from Kraken and overwrite this symbol's CSVs."""
-    pair = KRAKEN_PAIR.get(symbol)
-    if pair is None:
-        raise ValueError(f"{symbol} is not supported on Kraken (no pair mapping).")
+    """Pull fresh D/1H/5M bars from Kraken or Binance and overwrite this symbol's CSVs."""
+    # Determine data source
+    source = 'kraken' if symbol in KRAKEN_PAIR else 'binance'
 
-    for label, interval in INTERVALS.items():
-        bars = fetch_kraken_ohlc(pair, interval)
-        write_csv(bars, f"{symbol}_{label}.csv")
+    if source == 'kraken':
+        pair = KRAKEN_PAIR[symbol]
+        for label, interval in INTERVALS.items():
+            bars = fetch_kraken_ohlc(pair, interval)
+            write_csv(bars, f"{symbol}_{label}.csv")
+        # data_loader.py expects the intermediate timeframe at {symbol}_1H.csv
+        shutil.copy(OUT_DIR / f"{symbol}_4H.csv", OUT_DIR / f"{symbol}_1H.csv")
+    elif source == 'binance':
+        symbol_binance = BINANCE_PAIR.get(symbol)
+        if symbol_binance is None:
+            raise ValueError(f"{symbol} is not supported on Binance (no pair mapping).")
 
-    # data_loader.py expects the intermediate timeframe at {symbol}_1H.csv
-    shutil.copy(OUT_DIR / f"{symbol}_4H.csv", OUT_DIR / f"{symbol}_1H.csv")
+        # Binance intervals: '1d', '1h', '5m'
+        binance_intervals = {'D': '1d', '1H': '1h', '5M': '5m'}
+        for label, interval in binance_intervals.items():
+            bars = fetch_binance_ohlc(symbol_binance, interval)
+            write_csv(bars, f"{symbol}_{label}.csv")
+    else:
+        raise ValueError(f"{symbol} is not supported (not in Kraken or Binance pair mappings).")
 
 
 def main():
