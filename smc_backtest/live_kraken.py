@@ -40,6 +40,7 @@ KRAKEN_PAIR = {
 BINANCE_PAIR = {
     'AVAX': 'AVAXUSDT',
     'ADA': 'ADAUSDT',
+    'BNB': 'BNBUSDT',
 }
 
 # label -> kraken interval (minutes)
