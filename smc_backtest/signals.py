@@ -251,9 +251,8 @@ def generate_signals(
     min_rr: float = 1.5,             # iter10 test (was 1.2)
     # iter6+ additions: proven trend-following / vol-sizing techniques, each
     # individually toggleable so their effect can be isolated empirically.
-    use_atr_sl_floor: bool = True,   # ENABLED: prevents razor-thin SLs that whipsaw on noise (live finding: XRPUSD 0.23% SL)
-    atr_sl_mult: float = 1.5,        # Use 1.5× ATR as SL floor — typically 0.5-0.7% on crypto
-    sl_distance_min_pct: float = 0.003,  # NEW: reject signals if SL is <0.3% even after ATR floor (too tight for live trading)
+    use_atr_sl_floor: bool = False,  # iter6 result: neutral/slightly worse (12 trades, 66.7%, R=43.3 vs baseline 13/69.2%/52.9) -> off
+    atr_sl_mult: float = 1.5,
     use_ema_filter: bool = False,   # iter7/8 result: both EMA50 (60.0%/R=46.4) and EMA200 (53.8%/R=25.1) underperform baseline (69.2%/R=52.9) -> off
     ema_period: int = 200,  # iter8 test (was 50 in iter7: 15 trades/60.0%/R=46.4)
     use_rsi_filter: bool = True,    # iter9 test
@@ -489,13 +488,9 @@ def generate_signals(
             if rr < min_rr:
                 sig.filter_failed = 'S3_rr_too_low'
                 return sig
-            # Rule 4: SL sanity guards
+            # Rule 4: SL sanity guard
             if sl_dist / entry > risk_pct_sl_max:
                 sig.filter_failed = 'S4_sl_too_wide'
-                return sig
-            # Rule 4b: SL too tight (zone right at entry, no buffer for wicks/slippage)
-            if sl_dist / entry < sl_distance_min_pct:
-                sig.filter_failed = 'S4b_sl_too_tight'
                 return sig
             # Rule 5 (iter7, optional): EMA trend filter — classic trend-
             # following confirmation (price must be on the trend side of a
