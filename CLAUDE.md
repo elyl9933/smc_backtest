@@ -138,4 +138,9 @@ If these two get conflated, the signal generator will fire on the wrong setups.
 
 **Reversal** (R1–R7): Daily *external* CHoCH → Daily OB/FVG → liquidity swept → RSI divergence → 1H *external* CHoCH → 1H OB/FVG → 5M *internal* CHoCH
 
-**Filters** (F1–F7): impulsive displacement → zone touch ≤2 → no opposing zone blocking path → body close (not wick) → London/NY session → liquidity sweep present (logged, not hard-fail) → R:R ≥ 2.0
+**Filters** (F1–F8): impulsive displacement → zone touch ≤2 → no opposing zone blocking path → body close (not wick) → London/NY session → liquidity sweep present (logged, not hard-fail) → R:R ≥ 2.0 → **SL distance sanity** (0.3% floor, ATR floor on tight zones)
+
+**NEW (F8 – SL Protection):** 
+- ATR floor enabled: if zone-derived SL < 1.5× ATR, widen SL to 1.5× ATR (prevents whipsaws on noise)
+- SL tight filter: reject if SL < 0.3% of entry even after ATR floor (zone right at entry = no buffer for slippage/wicks)
+- Rationale: Live finding on XRPUSD (0.23% SL got stopped on a 5M wick before setup played out)
