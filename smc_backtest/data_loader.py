@@ -29,6 +29,7 @@ SYMBOL_FILE_MAP = {
     'BTCUSD': ('BTCUSD_D.csv', 'BTCUSD_1H.csv',  'BTCUSD_5M.csv'),
     'GBPUSD': ('GBPUSD_D.csv', 'GBPUSD_1H.csv',  'GBPUSD_5M.csv'),
     'XAUUSD': ('XAUUSD_D.csv', 'XAUUSD_1H.csv',  'XAUUSD_5M.csv'),
+    'SOFI': ('SOFI_D.csv', 'SOFI_1H.csv', 'SOFI_5M.csv'),
 }
 
 SYMBOL_INTERMEDIATE_TF: dict = {}  # all symbols default to '1H'

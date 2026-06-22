@@ -88,11 +88,14 @@ def find_order_blocks(
             if bearish.empty:
                 continue
             ob_row = bearish.iloc[-1]
+            loc = slice_.index.get_loc(ob_row.name)
+            if isinstance(loc, slice):
+                loc = loc.start
             obs.append(OrderBlock(
                 kind='bullish',
                 top=float(ob_row['high']),
                 bottom=float(ob_row['low']),
-                idx=slice_.index.get_loc(ob_row.name) + start,
+                idx=loc + start,
                 dt=ob_row.name,
                 formation_event_idx=ev.idx,
             ))
@@ -103,11 +106,14 @@ def find_order_blocks(
             if bullish.empty:
                 continue
             ob_row = bullish.iloc[-1]
+            loc = slice_.index.get_loc(ob_row.name)
+            if isinstance(loc, slice):
+                loc = loc.start
             obs.append(OrderBlock(
                 kind='bearish',
                 top=float(ob_row['high']),
                 bottom=float(ob_row['low']),
-                idx=slice_.index.get_loc(ob_row.name) + start,
+                idx=loc + start,
                 dt=ob_row.name,
                 formation_event_idx=ev.idx,
             ))

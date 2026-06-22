@@ -1,0 +1,111 @@
+[data_loader] Daily:  121 bars  (2026-02-20 → 2026-06-20)
+[data_loader] 1H    720 bars  (2026-02-20 → 2026-06-20)
+[data_loader] 5M:     640 bars  (2026-06-17 → 2026-06-20)
+Computing structure (Daily)...
+Computing structure (1H)...
+Computing structure (5M)...
+Finding Order Blocks and FVGs...
+Building liquidity zones...
+Computing RSI divergence (1H)...
+Generating signals...
+Signals: 10 passed, 8 rejected (from 33 5M CHoCH events)
+
+=======================================================
+  SMC STRUCTURE DETECTION SUMMARY
+=======================================================
+
+  Daily Timeframe
+    Trend:         bullish
+    Major swings:  8
+    Minor swings:  27
+    EQH/EQL:       9
+    Structure events (6 total):
+      BoS_bull                            2
+      CHoCH_external_bear                 1
+      CHoCH_internal_bear                 3
+
+  1H Timeframe
+    Trend:         bearish
+    Major swings:  44
+    Minor swings:  136
+    EQH/EQL:       51
+    Structure events (32 total):
+      BoS_bear                            4
+      BoS_bull                            6
+      CHoCH_external_bear                 5
+      CHoCH_external_bull                 4
+      CHoCH_internal_bear                 7
+      CHoCH_internal_bull                 6
+
+  5M Timeframe
+    Trend:         bullish
+    Major swings:  48
+    Minor swings:  141
+    EQH/EQL:       40
+    Structure events (33 total):
+      BoS_bear                            7
+      CHoCH_external_bull                 8
+      CHoCH_internal_bull                 18
+
+  1H Order Blocks:  31 (valid: 6)
+  1H FVGs:          144 (unfilled: 18)
+  1H Liq Zones:     65 (swept: 41)
+
+  Active BSL zones: 14
+    EQH          @ 67254.93
+    EQH          @ 74064.73
+    EQH          @ 74180.50
+    EQH          @ 76012.63
+    EQH          @ 77989.30
+  Active SSL zones: 10
+    EQL          @ 59070.60
+    EQL          @ 60742.87
+    EQL          @ 62203.37
+    EQL          @ 64960.00
+    EQL          @ 76038.92
+=======================================================
+
+Structure diagnostic chart saved → smc_backtest_results_structure.png
+Filter rejection log:
+       filter  count
+S3_rr_too_low      8
+
+Running backtest engine...
+
+Backtest complete: 8 trades, final balance $10,369.96 (3.7%)
+
+=======================================================
+  SMC BACKTEST RESULTS
+=======================================================
+  Total trades                   8
+  Win rate                       100.0%
+  Avg R per trade                0.455
+  Avg win R                      0.455
+  Avg loss R                     0
+  Total R                        3.64
+  Profit factor                  inf
+  Max drawdown                   0.0%
+  Sharpe ratio                   46.3
+  TP1 hit rate                   0.0%
+  Final balance                  $10,369.96
+  Total return                   3.7%
+
+  CONTINUATION SETUP
+  Trades                       8
+  Win rate                     100.0%
+  Avg R                        0.455
+
+  SESSION BREAKDOWN
+  London       trades=1      win=100.0%
+  Other        trades=7      win=100.0%
+
+  FILTER REJECTION LOG
+  S3_rr_too_low                          8  (100.0%)
+=======================================================
+
+Equity curve saved → smc_backtest_results.png
+Trade log exported → smc_trade_log.csv
+
+  Chart: smc_backtest_results.png
+  Log:   smc_trade_log.csv
+
